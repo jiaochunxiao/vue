@@ -6,19 +6,21 @@ var webpackConfig = {
     alias: alias
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
-        loader: 'babel',
+        loader: 'babel-loader',
         exclude: /node_modules/
       }
     ]
   },
   plugins: [
     new webpack.DefinePlugin({
+      __WEEX__: false,
       'process.env': {
         NODE_ENV: '"development"',
-        TRANSITION_DURATION: process.env.SAUCE ? 200 : 50
+        TRANSITION_DURATION: 50,
+        TRANSITION_BUFFER: 10
       }
     })
   ],
@@ -37,5 +39,11 @@ module.exports = {
   webpack: webpackConfig,
   webpackMiddleware: {
     noInfo: true
-  }
+  },
+  plugins: [
+    'karma-jasmine',
+    'karma-mocha-reporter',
+    'karma-sourcemap-loader',
+    'karma-webpack'
+  ]
 }

@@ -1,4 +1,17 @@
+var webpack = require('webpack')
 var base = require('./karma.base.config.js')
+
+base.webpack.plugins = [
+  new webpack.DefinePlugin({
+    __WEEX__: false,
+    'process.env': {
+      NODE_ENV: '"development"',
+      // sauce lab vms are slow!
+      TRANSITION_DURATION: 500,
+      TRANSITION_BUFFER: 50
+    }
+  })
+]
 
 /**
  * Having too many tests running concurrently on saucelabs
@@ -62,10 +75,10 @@ var batches = [
       browserName: 'iphone',
       version: '9.3'
     },
-    sl_android_4_2: {
+    sl_android_4_4: {
       base: 'SauceLabs',
       browserName: 'android',
-      version: '4.2'
+      version: '4.4'
     },
     sl_android_5_1: {
       base: 'SauceLabs',
@@ -88,10 +101,16 @@ module.exports = function (config) {
     sauceLabs: {
       testName: 'Vue.js unit tests',
       recordScreenshots: false,
+      connectOptions: {
+        'no-ssl-bump-domains': 'all' // Ignore SSL error on Android emulator
+      },
       build: process.env.CIRCLE_BUILD_NUM || process.env.SAUCE_BUILD_ID || Date.now()
     },
     // mobile emulators are really slow
     captureTimeout: 300000,
-    browserNoActivityTimeout: 300000
+    browserNoActivityTimeout: 300000,
+    plugins: base.plugins.concat([
+      'karma-sauce-launcher'
+    ])
   }))
 }
